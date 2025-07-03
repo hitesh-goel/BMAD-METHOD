@@ -16,11 +16,11 @@ For a new **Greenfield** project, the BMAD agents follow a structured Agile proc
 
 ```mermaid
 flowchart TD
-    A["Analyst: Business Analysis & Research\n/analyst create-doc project-brief"] -->
-    B["PM: Define Requirements PRD\n/pm create-doc prd"] -->
-    C["Architect: System Architecture Design\n/architect create-doc architecture"] -->
-    D["Dev: Code Development & Implementation\n/dev implement features"] -->
-    E["QA: Testing & Deployment\n/qa run tests"] -->
+    A["Analyst: Business Analysis & Research<br/>/analyst create-doc project-brief"] -->
+    B["PM: Define Requirements PRD<br/>/pm create-doc prd"] -->
+    C["Architect: System Architecture Design<br/>/architect create-doc architecture"] -->
+    D["Dev: Code Development & Implementation<br/>/dev implement features"] -->
+    E["QA: Testing & Deployment<br/>/qa run tests"] -->
     F["Project Complete ✅"]
 ```
 
@@ -34,11 +34,11 @@ For an existing **Brownfield** project (enhancing or adding features to an estab
 
 ```mermaid
 flowchart TD
-    A["Analyst: Current System Analysis\n/analyst analyze current state"] -->
-    B["PM: Enhancement Planning\n/pm plan new features"] -->
-    C["Architect: Impact Assessment\n/architect review design impact"] -->
-    D["Dev: Incremental Development\n/dev implement feature update"] -->
-    E["QA: Integration Testing\n/qa run integration tests"] -->
+    A["Analyst: Current System Analysis<br/>/analyst analyze current state"] -->
+    B["PM: Enhancement Planning<br/>/pm plan new features"] -->
+    C["Architect: Impact Assessment<br/>/architect review design impact"] -->
+    D["Dev: Incremental Development<br/>/dev implement feature update"] -->
+    E["QA: Integration Testing<br/>/qa run integration tests"] -->
     F["Enhancement Deployed ✅"]
 ```
 
@@ -53,9 +53,9 @@ A critical part of the Agile workflow is the iteration between development and t
 ```mermaid
 flowchart TD
     A["Scrum Master: Propose Next Story"] --> B{"User Approves Story?"}
-    B -->|Yes| C["Dev: Implement Story Tasks\n/dev implement story XYZ"]
+    B -->|Yes| C["Dev: Implement Story Tasks<br/>/dev implement story XYZ"]
     B -->|No| A
-    C --> D["QA: Execute Tests\n/qa run test suite"]
+    C --> D["QA: Execute Tests<br/>/qa run test suite"]
     D --> E{"All Tests Pass?"}
     E -->|No: Bugs found| C
     E -->|Yes: Story Done| F["PO: Accept Story ✔"]
@@ -103,7 +103,7 @@ The **Product Manager** agent is responsible for defining the product vision, re
 
 ```mermaid
 flowchart TD
-    U(User: Request PRD) -->|"*/pm create-doc prd"*| P(PM: Draft PRD from requirements)
+    U(User: Request PRD) -->|"/pm create-doc prd"| P(PM: Draft PRD from requirements)
     P --> P2(PM: Ask for feature details)
     U -->|Provide details| P3(PM: Refine PRD sections)
     P3 --> P4(PM: Produce final PRD document)
@@ -212,7 +212,7 @@ The **BMAD Orchestrator** is a special meta-agent that coordinates all other age
 
 ```mermaid
 flowchart TD
-    U["User: High-level request"] -->|"*workflow greenfield-fullstack*"| O["Orchestrator: Initialize workflow"]
+    U["User: High-level request"] -->|"workflow greenfield-fullstack"| O["Orchestrator: Initialize workflow"]
     O --> O1["Orchestrator: Ask project type & scope"]
     O1 --> U2["User: Answers Greenfield, full-stack"]
     U2 --> O2["Orchestrator: Recommend agents/workflow"]
@@ -256,19 +256,19 @@ I’ll update the canvas with these new diagrams and instructions shortly.
 
 ```mermaid
 graph TD
-    A["Architect: Create Architecture\nfrom PRD"] --> B["PO: Run Master\nChecklist"]
+    A["Architect: Create Architecture<br/>from PRD"] --> B["PO: Run Master<br/>Checklist"]
     B --> C{"Documents Aligned?"}
-    C -->|Yes| D["SM: Create User Story\nDoc"]
+    C -->|Yes| D["SM: Create User Story<br/>Doc"]
     C -->|No| E["PO: Update Epics & Docs"]
     E --> B
     D --> F{"Story Approved?"}
-    F -->|Yes| G["Dev: Implement Tasks\n& Write Tests"]
+    F -->|Yes| G["Dev: Implement Tasks<br/>& Write Tests"]
     F -->|No| D
     G --> H{"Clarification Needed?"}
     H -->|Yes| D
-    H -->|No| I["Dev: Mark Story\nReady for Review"]
+    H -->|No| I["Dev: Mark Story<br/>Ready for Review"]
     I --> J{"QA Review Required?"}
-    J -->|Yes| K["QA: Run Tests &\nReview Code"]
+    J -->|Yes| K["QA: Run Tests &<br/>Review Code"]
     J -->|No| L["Feature Done"]
     K --> M{"Issues Found?"}
     M -->|Yes| G
@@ -287,20 +287,20 @@ graph TD
 
 ```mermaid
 graph TD
-    A["Planning Complete:\nPRD & Architecture Aligned"] --> B["SM: Create Sprint\nBacklog from Epics"]
-    B --> C["SM: Create\nUser Story Doc"]
-    C --> D{"Story Approved\nby PO?"}
-    D -->|Yes| E["Dev: Code &\nWrite Tests"]
+    A["Planning Complete:<br/>PRD & Architecture Aligned"] --> B["SM: Create Sprint<br/>Backlog from Epics"]
+    B --> C["SM: Create<br/>User Story Doc"]
+    C --> D{"Story Approved<br/>by PO?"}
+    D -->|Yes| E["Dev: Code &<br/>Write Tests"]
     D -->|No| C
-    E --> F["Dev: Run Tests &\nValidate"]
-    F --> G["Dev: Mark Ready\nfor Review"]
-    G --> H{"QA Review\nNeeded?"}
-    H -->|Yes| I["QA: Review Code &\nRun Tests"]
+    E --> F["Dev: Run Tests &<br/>Validate"]
+    F --> G["Dev: Mark Ready<br/>for Review"]
+    G --> H{"QA Review<br/>Needed?"}
+    H -->|Yes| I["QA: Review Code &<br/>Run Tests"]
     H -->|No| J["PO: Accept Story"]
     I --> K{"Issues Found?"}
     K -->|Yes| E
     K -->|No| J
-    J --> L{"More Stories\nin Sprint?"}
+    J --> L{"More Stories<br/>in Sprint?"}
     L -->|Yes| C
     L -->|No| M["Sprint Done"]
 ```
