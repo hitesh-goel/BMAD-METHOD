@@ -220,7 +220,7 @@ flowchart TD
     D5 --> D6{All Validations Pass?}
     D6 -->|No| D7(Dev: Fix issues and retry)
     D7 --> D5
-    D6 -->|Yes| D8(Dev: Mark task '[x]' complete)
+    D6 -->|Yes| D8(Dev: Mark task [\x]\ complete)
     D8 --> D9(Dev: Update debug log if needed)
     D9 --> D10{More Tasks in Story?}
     D10 -->|Yes| D11(Dev: Read next task requirements)
