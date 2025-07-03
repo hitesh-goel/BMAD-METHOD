@@ -239,7 +239,82 @@ flowchart TD
     M4 --> U(User: Receives code, docs, etc.)
 ```
 
-In this flow, the user gives a high-level instruction to the BMad Master agent (for example, asking it to create an entire application or solve an end-to-end problem). The Master agent parses the request and formulates a plan. It can produce its own requirements or break down tasks internally, then proceed to generate the necessary artifacts. For instance, it might draft a mini-PRD or outline, then directly start coding the solution (covering front-end, back-end, etc. as needed). It may even execute tests or review its output for consistency (since it has QA and dev knowledge combined). Finally, the BMad Master provides the user with all the outputs – code files, documentation, and any other relevant results – in one go or in an interactive manner. The user receives a comprehensive result without manually coordinating between agents. The Master agent is ideal for **one-shot or single-session tasks** where you want a single AI agent to handle everything together. It trades the fine-grained control of individual agents for convenience, as it encapsulates the entire Agile team’s knowledge in one persona.
+In this flow, the user gives a high-level instruction to the BMad Master agent (for example, asking it to create an entire application or solve an end-to-end problem). The Master agent parses the request and formulates a plan. It can produce its own requirements or break down tasks internally, then proceed to generate the necessary artifacts. For instance, it might draft a mini-PRD or outline, then directly start coding the solution (covering front-end, back-end, etc. as needed). It may even execute tests or review its output for consistency (since it has QA and dev knowledge combined). Finally, the BMad Master provides the user with all the outputs – code files, documentation, and any other relevant results – in one go or in an interactive manner. The user receives a comprehensive result without manually coordinating between agents. The Master agent is ideal for **one-shot or single-session tasks** where you want a single AI agent to handle everything together. It trades the fine-grained 
+control of individual agents for convenience, as it encapsulates the entire Agile team’s knowledge in one persona.
+
+Great — I’ll now create two additional Mermaid diagrams:
+
+1. A feature delivery flowchart starting after PRD and architecture are completed, showing the sequential tasks handled by Architect → PO → SM → Dev → QA.
+2. A sprint planning and execution flowchart showing the broader cycle of backlog grooming, planning, delivery, and review across those same agents.
+
+I’ll also write out step-by-step instructions for each agent in both workflows using standard BMAD commands.
+
+I’ll update the canvas with these new diagrams and instructions shortly.
+
+
+## Feature Delivery Flowchart (Post-PRD and Architecture)
+
+```mermaid
+graph TD
+    A["Architect: Create Architecture\nfrom PRD"] --> B["PO: Run Master\nChecklist"]
+    B --> C{"Documents Aligned?"}
+    C -->|Yes| D["SM: Create User Story\nDoc"]
+    C -->|No| E["PO: Update Epics & Docs"]
+    E --> B
+    D --> F{"Story Approved?"}
+    F -->|Yes| G["Dev: Implement Tasks\n& Write Tests"]
+    F -->|No| D
+    G --> H{"Clarification Needed?"}
+    H -->|Yes| D
+    H -->|No| I["Dev: Mark Story\nReady for Review"]
+    I --> J{"QA Review Required?"}
+    J -->|Yes| K["QA: Run Tests &\nReview Code"]
+    J -->|No| L["Feature Done"]
+    K --> M{"Issues Found?"}
+    M -->|Yes| G
+    M -->|No| L["Feature Done"]
+```
+
+**Step-by-Step Guide:**
+
+1. **Architect** – Designs the technical solution and produces the Architecture document based on the PRD. This is done by the Architect agent using the `/architect create-doc architecture` command to capture system design and technical plans for the feature.
+2. **Product Owner (PO)** – Validates that the PRD and Architecture docs are in sync. The PO runs a master checklist (via `/po run-checklist`) to ensure all requirements and designs align. If any gaps or misalignment are found, the PO updates the product backlog (epics/stories) and documents accordingly, then reruns the checklist until **all documents are aligned**.
+3. **Scrum Master (SM)** – Once planning documents are aligned, the Scrum Master creates a detailed user story for the feature. Using the `/sm create-doc user-story` command, the SM agent generates a story document from the epics and architecture context. This story includes clear acceptance criteria and technical notes. The PO (or stakeholders) then review the story for completeness and clarity. If the story isn’t approved (e.g. missing details), the SM refines it until **the Product Owner approves the user story**.
+4. **Developer (Dev)** – After the story is approved, the Developer implements the feature by executing each task in the story sequentially. The Dev agent writes code for each task and writes corresponding unit tests, following a test-driven approach. They run all validations (unit tests, linting, etc.) to confirm each task meets the definition of done. If any requirement is unclear or a blocking issue arises, the Dev pauses to request clarification from the PO/SM, ensuring no ambiguity before proceeding. Once all tasks are completed and pass validation, the developer marks the story as “Ready for Review”.
+5. **Quality Assurance (QA)** – The QA agent (a senior developer role in BMAD) verifies the completed feature. If a QA review is requested or required, QA runs additional tests and performs a code review (e.g. executing the `review-story` task via `/qa run review-story`). The QA inspects code quality, refactors any suboptimal code, and adds missing tests or improvements as needed. Any issues found are fed back to the Developer for fixes, entering a fix/test loop until quality criteria are met. Once QA signs off that the code meets all standards (or if QA was skipped), the Product Owner confirms the feature is done. The story is then marked as completed (“Feature Done”), having passed all checks and acceptance criteria.
+
+## Sprint Planning and Execution Flowchart
+
+```mermaid
+graph TD
+    A["Planning Complete:\nPRD & Architecture Aligned"] --> B["SM: Create Sprint\nBacklog from Epics"]
+    B --> C["SM: Create\nUser Story Doc"]
+    C --> D{"Story Approved\nby PO?"}
+    D -->|Yes| E["Dev: Code &\nWrite Tests"]
+    D -->|No| C
+    E --> F["Dev: Run Tests &\nValidate"]
+    F --> G["Dev: Mark Ready\nfor Review"]
+    G --> H{"QA Review\nNeeded?"}
+    H -->|Yes| I["QA: Review Code &\nRun Tests"]
+    H -->|No| J["PO: Accept Story"]
+    I --> K{"Issues Found?"}
+    K -->|Yes| E
+    K -->|No| J
+    J --> L{"More Stories\nin Sprint?"}
+    L -->|Yes| C
+    L -->|No| M["Sprint Done"]
+```
+
+**Step-by-Step Guide:**
+
+1. **Planning Readiness** – Before a sprint begins, the Product Owner ensures that all high-level documents are finalized. The PRD and Architecture are aligned and up to date (the PO has run the master checklist to verify alignment). This planning completeness (green light from PRD/Architecture) is the starting point for sprint planning.
+2. **Sprint Backlog Creation (Scrum Master)** – The Scrum Master plans the sprint by breaking down the project’s epics into a sprint backlog of user stories. Using the aligned epics from the PRD, the SM identifies which stories or features to include in the sprint and creates the sprint backlog. For each new story, the SM invokes the user story template (via `/sm create-doc user-story`) to generate a story document that includes technical details from the architecture. This ensures each story is well-defined and ready for development.
+3. **Story Approval (Product Owner)** – For each drafted user story, the Product Owner (or relevant stakeholders) reviews the content to ensure it meets the acceptance criteria and business requirements. The PO checks that the story’s description, tasks, and acceptance criteria align with the intent of the feature. If the story is unclear or incomplete, the SM updates or refines the story (possibly by iterating on the `/sm create-doc user-story` command) and the PO reviews again. Only once the **PO approves the story** does it move into development.
+4. **Development (Developer)** – The Developer picks up the approved story and implements it task by task. The Dev agent writes code for each task and simultaneously writes tests (unit tests for each functionality) to adhere to BMAD’s test-driven workflow. As development progresses, the developer runs all tests and validation checks to ensure the code meets the story’s acceptance criteria and coding standards. The Dev agent will not mark a task complete unless all its tests pass and quality checks (like linting) succeed. Once all tasks in the story are done and validated, the Developer marks the story as **Ready for Review**.
+5. **Quality Assurance (QA)** – If the story requires additional validation or if the Product Owner requests a deeper review, the QA agent steps in. The QA (acting as a senior engineer) reviews the implementation by running the project’s test suite and performing a code review. In BMAD, this is often triggered by the `/qa run review-story` command, which causes the QA agent to execute a thorough code review and run any extended tests. The QA validates that the code adheres to quality standards (architecture, coding standards, test coverage) and may refactor code or add tests to address any deficiencies. If the QA finds issues, the story is sent back to development for the Dev to fix the problems, after which it will be reviewed/tested again. Once QA is satisfied (or if QA was not needed for that story), the story is ready for final approval.
+6. **Story Acceptance (Product Owner)** – The Product Owner performs the final verification of the story’s output. After development (and any QA review), the PO verifies that the acceptance criteria are fully met and the feature does what it’s supposed to do. If everything looks good and all criteria are satisfied, the PO accepts the story as “Done”. (If the feature isn’t satisfactory, the PO would provide feedback and the story would be reopened in development in the next iteration.)
+7. **Sprint Completion** – The cycle of story creation, development, QA, and acceptance repeats for each story in the sprint backlog. The Scrum Master will continuously bring in the next story (returning to the “Create User Story” step for each new item), and the team iterates through steps 3–6 for each story. Once all planned stories in the sprint are completed and accepted by the PO, the **sprint is concluded**. The team can then hold a sprint review to demonstrate the completed features and a retrospective to improve the process for the next sprint.
+
 
 ---
 
