@@ -16,15 +16,15 @@ For a new **Greenfield** project, the BMAD agents follow a structured Agile proc
 
 ```mermaid
 flowchart TD
-    A["Analyst: Business Analysis & Research<br/>/analyst create-doc project-brief"] -->
-    B["PM: Define Requirements PRD<br/>/pm create-doc prd"] -->
-    C["Architect: System Architecture Design<br/>/architect create-doc architecture"] -->
-    D["Dev: Code Development & Implementation<br/>/dev implement features"] -->
-    E["QA: Testing & Deployment<br/>/qa run tests"] -->
+    A["Analyst: Business Analysis & Research<br/>*create-doc project-brief-tmpl"] -->
+    B["PM: Define Requirements PRD<br/>*create-doc prd-tmpl"] -->
+    C["Architect: System Architecture Design<br/>*create-doc architecture-tmpl"] -->
+    D["Dev: Code Development & Implementation<br/>Story-based task execution"] -->
+    E["QA: Testing & Deployment<br/>review-story task"] -->
     F["Project Complete ✅"]
 ```
 
-In this Greenfield workflow, the **Analyst** agent conducts market research and gathers requirements (often by creating a Project Brief). Next, the **Product Manager (PM)** agent produces a Product Requirements Document (PRD) defining features and priorities. The **Architect** agent then designs the system architecture. Once planning is done, the **Developer (Dev)** agent implements the features in code. Finally, the **QA Specialist** agent handles test planning and quality assurance, ensuring the developed product passes all tests before deployment. Each arrow above represents the transition to a new phase where the user invokes the next agent with a slash command (e.g. `/pm create-doc prd` to have the PM create a PRD).
+In this Greenfield workflow, the **Analyst** agent conducts market research and gathers requirements (often by creating a Project Brief). Next, the **Product Manager (PM)** agent produces a Product Requirements Document (PRD) defining features and priorities. The **Architect** agent then designs the system architecture. Once planning is done, the **Developer (Dev)** agent implements the features in code. Finally, the **QA Specialist** agent handles test planning and quality assurance, ensuring the developed product passes all tests before deployment. Each arrow above represents the transition to a new phase where the user invokes the next agent and uses the appropriate command (e.g. `*create-doc prd-tmpl` to have the PM create a PRD).
 
 *(Greenfield steps reference: 1. Business analysis, 2. Requirements definition, 3. Architecture design, 4. Development, 5. Testing.)*
 
@@ -34,15 +34,15 @@ For an existing **Brownfield** project (enhancing or adding features to an estab
 
 ```mermaid
 flowchart TD
-    A["Analyst: Current System Analysis<br/>/analyst analyze current state"] -->
-    B["PM: Enhancement Planning<br/>/pm plan new features"] -->
-    C["Architect: Impact Assessment<br/>/architect review design impact"] -->
-    D["Dev: Incremental Development<br/>/dev implement feature update"] -->
-    E["QA: Integration Testing<br/>/qa run integration tests"] -->
+    A["Analyst: Current System Analysis<br/>*chat-mode for analysis"] -->
+    B["PM: Enhancement Planning<br/>*create-doc brownfield-prd-tmpl"] -->
+    C["Architect: Impact Assessment<br/>*create-doc brownfield-architecture-tmpl"] -->
+    D["Dev: Incremental Development<br/>Story-based task execution"] -->
+    E["QA: Integration Testing<br/>review-story task"] -->
     F["Enhancement Deployed ✅"]
 ```
 
-In this Brownfield scenario, the **Analyst** (or another suitable role) first examines the existing system and requirements (e.g. reviewing documentation or user feedback). Then the **PM** agent plans the enhancement – updating the PRD or writing a mini-requirements doc for the new feature. The **Architect** evaluates the impact of the changes on the current architecture (ensuring compatibility and noting any refactoring needs). Next, the **Dev** agent implements the new feature in an incremental, non-disruptive way. Finally, the **QA** agent performs integration testing to confirm the new feature works with the existing system without regressions. Just like in Greenfield, each stage is triggered by the user engaging the respective agent (for example, the user might type `/architect create-doc architecture` to update design documentation for the enhancement, or `/qa run tests` to execute the test suite). This ensures a smooth Agile cycle even in legacy projects.
+In this Brownfield scenario, the **Analyst** (or another suitable role) first examines the existing system and requirements (e.g. reviewing documentation or user feedback). Then the **PM** agent plans the enhancement – updating the PRD or writing a mini-requirements doc for the new feature. The **Architect** evaluates the impact of the changes on the current architecture (ensuring compatibility and noting any refactoring needs). Next, the **Dev** agent implements the new feature in an incremental, non-disruptive way. Finally, the **QA** agent performs integration testing to confirm the new feature works with the existing system without regressions. Just like in Greenfield, each stage is triggered by the user engaging the respective agent (for example, the user might type `*create-doc brownfield-architecture-tmpl` to update design documentation for the enhancement, or use the `review-story` task for QA review). This ensures a smooth Agile cycle even in legacy projects.
 
 *(Brownfield steps reference: 1. Current system analysis, 2. Enhancement planning, 3. Impact assessment, 4. Incremental dev, 5. Integration testing.)*
 
@@ -53,19 +53,109 @@ A critical part of the Agile workflow is the iteration between development and t
 ```mermaid
 flowchart TD
     A["Scrum Master: Propose Next Story"] --> B{"User Approves Story?"}
-    B -->|Yes| C["Dev: Implement Story Tasks<br/>/dev implement story XYZ"]
+    B -->|Yes| C["Dev: Implement Story Tasks<br/>Sequential task execution"]
     B -->|No| A
-    C --> D["QA: Execute Tests<br/>/qa run test suite"]
+    C --> D["QA: Execute Tests<br/>review-story task"]
     D --> E{"All Tests Pass?"}
     E -->|No: Bugs found| C
     E -->|Yes: Story Done| F["PO: Accept Story ✔"]
     F --> A
 ```
 
-In this lifecycle, the **Scrum Master (SM)** agent (or the user) selects a user story for development from the backlog. The user (often playing the Product Owner role) reviews and approves the story before implementation. Once approved, the **Dev** agent writes code to implement the story's tasks (e.g. the user issues a command like `/dev implement story 1.2` to start development on story 1.2). When development is complete, the **QA** agent is invoked to run tests on the new code (such as executing unit tests, integration tests, etc.). If the QA tests uncover bugs or failed criteria, the workflow loops back – the Dev agent addresses the issues and the QA agent re-tests the fixes. Once all tests pass, the **Product Owner (PO)** (or user acting as PO) verifies the story against acceptance criteria and marks it as done. This iterative loop continues until the story is completed to satisfaction, ensuring high quality through Dev–QA collaboration.
+In this lifecycle, the **Scrum Master (SM)** agent (or the user) selects a user story for development from the backlog. The user (often playing the Product Owner role) reviews and approves the story before implementation. Once approved, the **Dev** agent writes code to implement the story's tasks by loading the story file and executing tasks sequentially. When development is complete, the **QA** agent is invoked to run tests on the new code (such as executing unit tests, integration tests, etc.). If the QA tests uncover bugs or failed criteria, the workflow loops back – the Dev agent addresses the issues and the QA agent re-tests the fixes. Once all tests pass, the **Product Owner (PO)** (or user acting as PO) verifies the story against acceptance criteria and marks it as done. This iterative loop continues until the story is completed to satisfaction, ensuring high quality through Dev–QA collaboration.
 
 *(The Dev–QA cycle aligns with BMAD’s Quality Assurance phase where QA does testing and the Dev fixes any bugs.)*
 
+## Workflow Conditional Flows and Decision Points
+
+BMAD workflows include sophisticated conditional logic to adapt to different project scenarios and complexity levels. Here are the key conditional flows:
+
+### Brownfield Enhancement Classification
+```mermaid
+flowchart TD
+    A[Enhancement Request] --> B{Classify Complexity}
+    B -->|Single Story| C[Create Story<br/>Exit Workflow]
+    B -->|Small Feature| D[Create Epic<br/>Exit Workflow]
+    B -->|Major Enhancement| E[Continue Full Workflow]
+```
+
+Brownfield workflows include an early classification step that routes work based on complexity:
+- **Single Story**: Direct to story creation, bypassing full planning
+- **Small Feature**: Create epic with stories, minimal planning
+- **Major Enhancement**: Full workflow with PRD and architecture
+
+### Documentation Adequacy Check
+```mermaid
+flowchart TD
+    A[Major Enhancement] --> B{Documentation<br/>Adequate?}
+    B -->|Yes| C[Skip to Planning]
+    B -->|No| D[Run document-project task]
+    D --> C
+```
+
+### Architecture Decision Flow
+```mermaid
+flowchart TD
+    A[PRD Complete] --> B{Architecture<br/>Needed?}
+    B -->|New Patterns| C[Create Architecture Doc]
+    B -->|Existing Patterns| D[Skip to Story Creation]
+    C --> E{PRD Updates<br/>Required?}
+    E -->|Yes| F[PM Updates PRD]
+    F --> C
+    E -->|No| D
+```
+
+### PO Validation Loop
+```mermaid
+flowchart TD
+    A[All Artifacts Ready] --> B[PO Validation]
+    B --> C{Validation<br/>Result?}
+    C -->|Approved| D[Proceed to Development]
+    C -->|Conditional| E[Fix Specific Issues]
+    C -->|Rejected| F[Major Revision Required]
+    E --> B
+    F --> G[Return to Planning]
+```
+
+### QA Review Cycle
+```mermaid
+flowchart TD
+    A[Story Complete] --> B{QA Review<br/>Requested?}
+    B -->|Yes| C[QA Reviews & Refactors]
+    B -->|No| D[Mark Story Done]
+    C --> E{Issues Found?}
+    E -->|Unchecked Items| F[Dev Addresses Feedback]
+    E -->|All Clear| D
+    F --> C
+```
+
+### Optional vs Required Steps
+
+**Required Steps** (must complete):
+- Project analysis/brief
+- PRD creation (or update for brownfield)
+- PO validation checkpoint
+- Story implementation
+
+**Optional Steps** (can be skipped):
+- Brainstorming sessions
+- Market/technical research
+- Architecture documentation (if using existing patterns)
+- QA review (user discretion)
+- Retrospectives
+
+### Workflow Adaptation Strategies
+
+**Greenfield Projects**:
+- Full sequential flow from analysis to deployment
+- All planning artifacts created from scratch
+- Optional AI UI generation integration
+
+**Brownfield Projects**:
+- Early complexity classification
+- Documentation reuse when adequate
+- Choice of story creation method based on doc format
+- Emphasis on impact assessment
 ## Common Agent Command Patterns
 
 BMAD agents use specific command structures with the `*` prefix for all commands. Each agent has a defined set of commands that correspond to their specialized tasks and capabilities. Below are the actual command patterns used in the BMAD framework:
@@ -80,6 +170,14 @@ All BMAD agent commands use the **asterisk (`*`) prefix** when invoked:
 - `*exit` - Exits the current agent persona
 
 ### Agent-Specific Commands
+
+**Analyst Commands:**
+- `*help`, `*chat-mode`, `*create-doc {template}`, `*execute-checklist {checklist}`, `*exit`
+- Available templates: `project-brief-tmpl`
+
+**Product Manager Commands:**
+- `*help`, `*chat-mode`, `*create-doc {template}`, `*execute-checklist {checklist}`, `*exit`
+- Templates: `prd-tmpl`, `brownfield-prd-tmpl`
 
 **Architect Commands:**
 - `*help`, `*chat-mode`, `*create-doc {template}`, `*execute-checklist {checklist}`, `*research {topic}`, `*exit`
@@ -101,6 +199,10 @@ All BMAD agent commands use the **asterisk (`*`) prefix** when invoked:
 - `*help`, `*chat-mode`, `*exit`
 - Primary task: `review-story` (active refactoring and senior code review)
 
+**UX-Expert Commands:**
+- `*help`, `*chat-mode`, `*create-doc {template}`, `*execute-checklist {checklist}`, `*exit`
+- Templates: `front-end-spec-tmpl`, `ux-research-plan-tmpl`
+
 ### Meta-Agent Commands
 
 **BMAD Orchestrator Commands:**
@@ -113,6 +215,9 @@ All BMAD agent commands use the **asterisk (`*`) prefix** when invoked:
 
 Commands are tightly integrated with the BMAD framework's templates and checklists:
 - **Templates**: 11 professional document templates (PRD, architecture variants, project brief, etc.)
+  - **Important**: All template names require the `-tmpl` suffix when used in commands
+  - Example: Use `*create-doc prd-tmpl` not `*create-doc prd`
+  - Template files are stored with full names like `prd-tmpl.md` in the templates directory
 - **Checklists**: 6 validation checklists including the comprehensive 380-point architect checklist
 - **Tasks**: 17 specialized tasks including `create-next-story`, `review-story`, `execute-checklist`
 
@@ -125,6 +230,86 @@ Agents use flexible request resolution to match user intent to commands:
 
 Each agent maintains numbered option lists when presenting choices, allowing users to type numbers for selection. The `*help` command always shows the complete, current command set for the active agent.
 
+### File Resolution System
+
+BMAD uses a structured file resolution system for locating templates, tasks, and other resources:
+
+**IDE-FILE-RESOLUTION Pattern**: `{root}/{type}/{name}.md`
+- **{root}**: Can be `bmad-core`, expansion pack directories, or `common`
+- **{type}**: Resource type folder (`templates`, `tasks`, `checklists`, `agents`)
+- **{name}**: Resource filename without extension
+
+**Resolution Order**:
+1. Current expansion pack (if applicable)
+2. `bmad-core` directory
+3. `common` directory
+4. Fallback to fuzzy matching
+
+**Examples**:
+- Template: `bmad-core/templates/prd-tmpl.md`
+- Task: `bmad-core/tasks/create-next-story.md`
+- Checklist: `bmad-core/checklists/architect-checklist.md`
+- Agent: `bmad-core/agents/architect.md`
+
+## Core Configuration System
+
+BMAD uses a centralized configuration system to manage project settings and agent behavior:
+
+### Core Configuration File
+Located at `.bmad-core/core-config.yaml`, this file defines:
+- **PRD Location**: Path to the active Product Requirements Document
+- **Architecture Location**: Path to the current architecture document
+- **Workflow Settings**: Enable/disable workflow tracking
+- **Project Type**: Greenfield or Brownfield designation
+- **Agent Settings**: Custom configurations for specific agents
+
+### Configuration Structure
+```yaml
+prd: "docs/prd.md"                    # Active PRD document
+architecture: "docs/architecture.md"   # Active architecture document
+enable_workflow: true                  # Enable workflow plan tracking
+workflow: "greenfield-fullstack"       # Active workflow template
+project_type: "greenfield"             # Project type for adaptive behavior
+```
+
+### Agent-Specific Configurations
+- **Dev Agent**: Uses `devLoadAlwaysFiles` to load essential files on every story
+- **PO Agent**: Uses project type to adapt master checklist validation
+- **SM Agent**: Uses workflow settings to enforce story sequencing
+
+### Configuration Impact
+- Agents automatically adapt behavior based on configuration
+- Checklists adjust validation rules for project type
+- Workflows enforce or relax sequencing based on settings
+- File resolution prioritizes configured paths
+
+## Agent Activation and Invocation
+
+BMAD agents are invoked through a two-step process depending on your environment:
+
+### IDE Integration (VS Code, Cursor, Windsurf)
+1. **Agent Invocation**: Use `@[agent-name]` to invoke an agent (e.g., `@architect`, `@dev`, `@qa`)
+2. **Agent Response**: The agent activates with a personalized greeting and reminds you to use `*help`
+3. **Command Execution**: Use `*` prefix commands within the agent context
+
+### CLI or Chat Interface
+1. **Direct Invocation**: Type the agent name or use `/[agent-name]` format
+2. **Command Execution**: Once agent is active, use `*` prefix commands
+
+### Agent Activation Process
+- **YAML Configuration**: Each agent has a YAML file defining persona, commands, dependencies
+- **Persona Loading**: Agent loads its character, expertise, and communication style
+- **Context Initialization**: Agent loads relevant templates, tasks, and checklists
+- **Session State**: Agent maintains context throughout the conversation
+
+### Example Interaction
+```
+User: @architect
+Architect: Hello! I'm Winston, your Solution Architect. I'm here to help design robust, scalable systems. Type *help to see available commands.
+User: *create-doc architecture-tmpl
+Architect: I'll create a comprehensive architecture document for your project...
+```
+
 ## Agent-Specific Interaction Flows
 
 Next, we provide a flowchart for each BMAD agent, illustrating how a user would typically interact with that agent and what the agent produces. Each agent has a distinct role and **capabilities** in the Agile team, and the flows below show example interactions in context.
@@ -135,14 +320,14 @@ The **Analyst** agent specializes in early-stage planning: market research, brai
 
 ```mermaid
 flowchart TD
-    U(User: Request market research) -->|"/analyst create-doc project-brief"| A(Analyst: Research & Draft Brief)
+    U(User: Request market research) -->|"*create-doc project-brief-tmpl"| A(Analyst: Research & Draft Brief)
     A --> A2(Analyst: Ask clarifying questions)
     U -->|Provide answers| A3(Analyst: Refine requirements)
     A3 --> B(Analyst: Deliver Project Brief)
     B --> U(User: Reviews insights)
 ```
 
-In this flow, the **User** invokes the Analyst (for example with `/analyst create-doc project-brief`) to perform market research and draft a project brief. The Analyst agent may ask follow-up questions to clarify project context or requirements, then iteratively refines the brief. Finally, the Analyst produces a document or summary of findings (market analysis, key requirements, etc.) and shares it with the user. The user can then review these insights to inform the next steps. This agent is best used at the **project initiation** stage for brainstorming and defining the problem space.
+In this flow, the **User** invokes the Analyst agent and then uses the command `*create-doc project-brief-tmpl` to perform market research and draft a project brief. The Analyst agent may ask follow-up questions to clarify project context or requirements, then iteratively refines the brief. Finally, the Analyst produces a document or summary of findings (market analysis, key requirements, etc.) and shares it with the user. The user can then review these insights to inform the next steps. This agent is best used at the **project initiation** stage for brainstorming and defining the problem space.
 
 ### Product Manager (PM) Agent
 
@@ -150,14 +335,14 @@ The **Product Manager** agent is responsible for defining the product vision, re
 
 ```mermaid
 flowchart TD
-    U(User: Request PRD) -->|"/pm create-doc prd"| P(PM: Draft PRD from requirements)
+    U(User: Request PRD) -->|"*create-doc prd-tmpl"| P(PM: Draft PRD from requirements)
     P --> P2(PM: Ask for feature details)
     U -->|Provide details| P3(PM: Refine PRD sections)
     P3 --> P4(PM: Produce final PRD document)
     P4 --> U(User: Reviews PRD output)
 ```
 
-Here the user triggers the PM agent to create a PRD (e.g. `/pm create-doc prd`). The PM agent gathers existing requirements (from the Analyst’s brief or user input) and drafts the PRD, possibly prompting the user for additional feature details or priorities. The agent then refines each section (such as objectives, user stories, acceptance criteria) through an interactive process. The result is a comprehensive PRD document which the PM agent delivers. The user reviews this PRD to ensure it meets the vision and can then proceed to architecture and development. The PM agent is typically used in **planning and definition** phases to solidify *what* needs to be built.
+Here the user triggers the PM agent to create a PRD using `*create-doc prd-tmpl`. The PM agent gathers existing requirements (from the Analyst’s brief or user input) and drafts the PRD, possibly prompting the user for additional feature details or priorities. The agent then refines each section (such as objectives, user stories, acceptance criteria) through an interactive process. The result is a comprehensive PRD document which the PM agent delivers. The user reviews this PRD to ensure it meets the vision and can then proceed to architecture and development. The PM agent is typically used in **planning and definition** phases to solidify *what* needs to be built.
 
 ### Solution Architect Agent
 
@@ -236,6 +421,17 @@ flowchart TD
 - **Sequential Execution**: Completes tasks one-by-one in order, never skipping ahead
 - **Quality Gates**: NEVER completes tasks with failing automated validations
 - **Test-Driven**: Every task includes unit test implementation as part of completion criteria
+
+**Story Status Progression:**
+Stories follow a strict status flow through the development lifecycle:
+1. **Draft** → Initial story creation by SM
+2. **Approved** → PO has validated and approved for development
+3. **In Progress** → Dev agent is actively implementing
+4. **Ready for Review** → Dev completed, awaiting QA review
+5. **Review** → QA is actively reviewing/refactoring
+6. **Done** → QA approved, story complete
+
+Each status change is tracked in the story file header, providing full traceability of the story lifecycle.
 
 **Key Capabilities:**
 - **Story Record Management**: ONLY updates Dev Agent Record sections in story files:
@@ -316,14 +512,14 @@ The **UX-Expert** agent (User Experience Designer) helps design the user interfa
 
 ```mermaid
 flowchart TD
-    U(User: Request UX design) -->|"/ux-expert suggest UI flow"| UX(UX-Expert: Draft UI/UX design proposals)
+    U(User: Request UX design) -->|"*chat-mode for design discussion"| UX(UX-Expert: Draft UI/UX design proposals)
     UX --> UX2(UX-Expert: Present wireframe ideas or user flow)
     U -->|Give feedback/preferences| UX3(UX-Expert: Refine design details)
     UX3 --> UX4(UX-Expert: Deliver UX specs/prototype outline)
     UX4 --> U(User: Reviews UX proposal)
 ```
 
-In this interaction, the user might ask the UX agent for a design on a feature (e.g., "/ux-expert create a wireframe for the signup page"). The UX-Expert agent responds by drafting a user flow or describing a wireframe/prototype for the interface. It could list UI components, layout ideas, or even produce a simple ASCII or Mermaid diagram for the UI if templates allow. The agent may ask the user for branding guidelines or user preferences to tailor the design. The user provides feedback (such as preferred color schemes or layouts), and the UX agent refines the design. Finally, the UX-Expert delivers a UX specification or prototype outline. The user reviews this to ensure it aligns with the product vision. This agent is utilized during the **design phase** in parallel with architecture, focusing on the *user interface and experience* aspect of the product.
+In this interaction, the user might ask the UX agent for a design on a feature by using `*chat-mode` to discuss wireframe ideas for the signup page. The UX-Expert agent responds by drafting a user flow or describing a wireframe/prototype for the interface. It could list UI components, layout ideas, or even produce a simple ASCII or Mermaid diagram for the UI if templates allow. The agent may ask the user for branding guidelines or user preferences to tailor the design. The user provides feedback (such as preferred color schemes or layouts), and the UX agent refines the design. Finally, the UX-Expert delivers a UX specification or prototype outline. The user reviews this to ensure it aligns with the product vision. This agent is utilized during the **design phase** in parallel with architecture, focusing on the *user interface and experience* aspect of the product.
 
 ### Product Owner (PO) Agent
 
@@ -444,11 +640,31 @@ BMAD extends beyond core software development with specialized expansion packs t
 
 ### Game Development Expansion Pack
 
-**Game Designer Agent**: Specializes in game design documentation, level design, and game mechanics. Creates game design documents using `game-design-doc-tmpl` and `level-design-doc-tmpl` templates.
+**Game Designer Agent (Alex)**: Specializes in game design documentation, level design, and game mechanics. Creates game design documents using `game-design-doc-tmpl` and `level-design-doc-tmpl` templates.
 
-**Game Developer Agent**: Focused on game-specific development patterns and Phaser 2D game implementation. Uses specialized templates like `game-architecture-tmpl` and follows game development workflows.
+**Commands**:
+- `*help`, `*chat-mode`, `*create`, `*exit`
+- `*brainstorm {topic}` - Facilitate structured game design brainstorming session
+- `*research {topic}` - Generate deep research prompt for game-specific investigation
+- `*elicit` - Run advanced elicitation to clarify game design requirements
+- `*checklist {checklist}` - Execute game design validation checklists
 
-**Game Scrum Master Agent**: Manages game development sprints with understanding of game-specific milestones, playtesting cycles, and iterative game design processes.
+**Game Developer Agent (Maya)**: Focused on game-specific development patterns and Phaser 2D game implementation. Uses specialized templates like `game-architecture-tmpl` and follows game development workflows.
+
+**Commands**:
+- `*help`, `*chat-mode`, `*create`, `*exit`
+- `*run-tests` - Execute game-specific linting and tests
+- `*lint` - Run linting only
+- `*status` - Show current story progress
+- `*complete-story` - Finalize story implementation
+- `*guidelines` - Review development guidelines and coding standards
+
+**Game Scrum Master Agent (Jordan)**: Manages game development sprints with understanding of game-specific milestones, playtesting cycles, and iterative game design processes.
+
+**Commands**:
+- `*help`, `*chat-mode`, `*create`, `*exit`
+- `*checklist {checklist}` - Execute game development process checklists
+- Primary task: Create game story with game-specific considerations
 
 **Available Workflows**: 
 - `game-dev-greenfield`: Complete game development from concept to release
@@ -458,18 +674,32 @@ BMAD extends beyond core software development with specialized expansion packs t
 
 **BMAD The Creator Agent**: Framework extension specialist responsible for creating new agents, expansion packs, and extending the BMAD ecosystem. This meta-agent can generate new agent configurations, templates, and workflows.
 
+**Commands**:
+- `*help`, `*chat-mode`, `*create`, `*exit`
+- `*brainstorm {topic}` - Facilitate structured framework extension brainstorming
+- `*research {topic}` - Generate deep research prompt for framework-specific investigation
+- `*elicit` - Run advanced elicitation to clarify extension requirements
+
 **Key Capabilities**:
-- `create-agent`: Generates new agent configurations with proper templates and tasks
-- `generate-expansion-pack`: Creates complete expansion packs with multiple agents and workflows
+- `create-agent`: Task that generates new agent configurations with proper templates and tasks
+- `generate-expansion-pack`: Task that creates complete expansion packs with multiple agents and workflows
 - Uses `agent-tmpl` and `expansion-pack-plan-tmpl` for structured creation
 
 ### Infrastructure DevOps Expansion Pack
 
-**Infrastructure DevOps Platform Agent**: DevOps specialist focused on infrastructure architecture, platform engineering, and deployment automation. Handles cloud infrastructure, CI/CD pipelines, and operational concerns.
+**Infrastructure DevOps Platform Agent (Alex)**: DevOps specialist focused on infrastructure architecture, platform engineering, and deployment automation. Handles cloud infrastructure, CI/CD pipelines, and operational concerns.
+
+**Commands**:
+- `*help`, `*chat-mode`, `*exit`
+- `*create-doc {template}` - Create infrastructure documentation
+- `*review-infrastructure` - Review existing infrastructure for best practices
+- `*validate-infrastructure` - Validate infrastructure against security and reliability standards
+- `*checklist` - Run infrastructure checklist for comprehensive review
 
 **Key Capabilities**:
-- `review-infrastructure`: Validates infrastructure configurations and best practices
-- `validate-infrastructure`: Ensures infrastructure meets security and scalability requirements
+- Infrastructure architecture design and validation
+- CI/CD pipeline configuration and optimization
+- Cloud platform expertise (AWS, Azure, GCP)
 - Uses `infrastructure-architecture-tmpl` and `infrastructure-platform-from-arch-tmpl`
 
 ### Expansion Pack Integration
@@ -488,7 +718,7 @@ The **BMAD Orchestrator** is a special meta-agent that coordinates all other age
 
 ```mermaid
 flowchart TD
-    U["User: High-level request"] -->|"workflow greenfield-fullstack"| O["Orchestrator: Initialize workflow"]
+    U["User: High-level request"] -->|"*workflow greenfield-fullstack"| O["Orchestrator: Initialize workflow"]
     O --> O1["Orchestrator: Ask project type & scope"]
     O1 --> U2["User: Answers Greenfield, full-stack"]
     U2 --> O2["Orchestrator: Recommend agents/workflow"]
@@ -507,7 +737,7 @@ The **BMAD Master** agent is another meta-agent that possesses **all capabilitie
 
 ```mermaid
 flowchart TD
-    U(User: Broad request) -->|"/bmad-master create full app"| M(Master: Understand goals & plan)
+    U(User: Broad request) -->|"*task create full app"| M(Master: Understand goals & plan)
     M --> M1(Master: Generate requirements and design)
     M1 --> M2(Master: Write code for all components)
     M2 --> M3(Master: Possibly run tests or self-review)
@@ -599,10 +829,10 @@ graph TD
 **Step-by-Step Guide:**
 
 1. **Planning Readiness** – Before a sprint begins, the Product Owner ensures that all high-level documents are finalized. The PRD and Architecture are aligned and up to date (the PO has run the master checklist to verify alignment). This planning completeness (green light from PRD/Architecture) is the starting point for sprint planning.
-2. **Sprint Backlog Creation (Scrum Master)** – The Scrum Master plans the sprint by breaking down the project’s epics into a sprint backlog of user stories. Using the aligned epics from the PRD, the SM identifies which stories or features to include in the sprint and creates the sprint backlog. For each new story, the SM invokes the user story template (via `/sm create-doc user-story`) to generate a story document that includes technical details from the architecture. This ensures each story is well-defined and ready for development.
-3. **Story Approval (Product Owner)** – For each drafted user story, the Product Owner (or relevant stakeholders) reviews the content to ensure it meets the acceptance criteria and business requirements. The PO checks that the story’s description, tasks, and acceptance criteria align with the intent of the feature. If the story is unclear or incomplete, the SM updates or refines the story (possibly by iterating on the `/sm create-doc user-story` command) and the PO reviews again. Only once the **PO approves the story** does it move into development.
+2. **Sprint Backlog Creation (Scrum Master)** – The Scrum Master plans the sprint by breaking down the project’s epics into a sprint backlog of user stories. Using the aligned epics from the PRD, the SM identifies which stories or features to include in the sprint and creates the sprint backlog. For each new story, the SM invokes the user story template (via `*create` or `*draft` command) to generate a story document that includes technical details from the architecture. This ensures each story is well-defined and ready for development.
+3. **Story Approval (Product Owner)** – For each drafted user story, the Product Owner (or relevant stakeholders) reviews the content to ensure it meets the acceptance criteria and business requirements. The PO checks that the story’s description, tasks, and acceptance criteria align with the intent of the feature. If the story is unclear or incomplete, the SM updates or refines the story (possibly by iterating on the `*create` command) and the PO reviews again. Only once the **PO approves the story** does it move into development.
 4. **Development (Developer)** – The Developer picks up the approved story and implements it task by task. The Dev agent writes code for each task and simultaneously writes tests (unit tests for each functionality) to adhere to BMAD’s test-driven workflow. As development progresses, the developer runs all tests and validation checks to ensure the code meets the story’s acceptance criteria and coding standards. The Dev agent will not mark a task complete unless all its tests pass and quality checks (like linting) succeed. Once all tasks in the story are done and validated, the Developer marks the story as **Ready for Review**.
-5. **Quality Assurance (QA)** – If the story requires additional validation or if the Product Owner requests a deeper review, the QA agent steps in. The QA (acting as a senior engineer) reviews the implementation by running the project’s test suite and performing a code review. In BMAD, this is often triggered by the `/qa run review-story` command, which causes the QA agent to execute a thorough code review and run any extended tests. The QA validates that the code adheres to quality standards (architecture, coding standards, test coverage) and may refactor code or add tests to address any deficiencies. If the QA finds issues, the story is sent back to development for the Dev to fix the problems, after which it will be reviewed/tested again. Once QA is satisfied (or if QA was not needed for that story), the story is ready for final approval.
+5. **Quality Assurance (QA)** – If the story requires additional validation or if the Product Owner requests a deeper review, the QA agent steps in. The QA (acting as a senior engineer) reviews the implementation by running the project’s test suite and performing a code review. In BMAD, this is done through the `review-story` task, which causes the QA agent to execute a thorough code review and actively refactor code as needed. The QA validates that the code adheres to quality standards (architecture, coding standards, test coverage) and may refactor code or add tests to address any deficiencies. If the QA finds issues, the story is sent back to development for the Dev to fix the problems, after which it will be reviewed/tested again. Once QA is satisfied (or if QA was not needed for that story), the story is ready for final approval.
 6. **Story Acceptance (Product Owner)** – The Product Owner performs the final verification of the story’s output. After development (and any QA review), the PO verifies that the acceptance criteria are fully met and the feature does what it’s supposed to do. If everything looks good and all criteria are satisfied, the PO accepts the story as “Done”. (If the feature isn’t satisfactory, the PO would provide feedback and the story would be reopened in development in the next iteration.)
 7. **Sprint Completion** – The cycle of story creation, development, QA, and acceptance repeats for each story in the sprint backlog. The Scrum Master will continuously bring in the next story (returning to the “Create User Story” step for each new item), and the team iterates through steps 3–6 for each story. Once all planned stories in the sprint are completed and accepted by the PO, the **sprint is concluded**. The team can then hold a sprint review to demonstrate the completed features and a retrospective to improve the process for the next sprint.
 
