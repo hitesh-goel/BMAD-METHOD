@@ -52,17 +52,25 @@ A critical part of the Agile workflow is the iteration between development and t
 
 ```mermaid
 flowchart TD
-    A["Scrum Master: Propose Next Story"] --> B{"User Approves Story?"}
-    B -->|Yes| C["Dev: Implement Story Tasks<br/>Sequential task execution"]
-    B -->|No| A
-    C --> D["QA: Execute Tests<br/>review-story task"]
-    D --> E{"All Tests Pass?"}
-    E -->|No: Bugs found| C
-    E -->|Yes: Story Done| F["PO: Accept Story ✔"]
-    F --> A
+    A["SM: Create Draft Story"] --> B["PO: Review & Approve Story"]
+    B --> C{"Story Approved?"}
+    C -->|Yes| D["Dev: Implement Story Tasks<br/>Sequential task execution"]
+    C -->|No| A
+    D --> E["QA: Execute Tests<br/>review-story task"]
+    E --> F{"All Tests Pass?"}
+    F -->|No: Bugs found| D
+    F -->|Yes| G["PO: Final Story Acceptance"]
+    G --> H{"Story Meets Acceptance Criteria?"}
+    H -->|Yes| I["PO: Mark Story Done ✔"]
+    H -->|No| J["PO: Provide Feedback"]
+    J --> D
+    I --> K{"More Stories?"}
+    K -->|Yes| A
+    K -->|No| L["PO: Epic Retrospective (Optional)"]
+    L --> M["Epic Complete"]
 ```
 
-In this lifecycle, the **Scrum Master (SM)** agent (or the user) selects a user story for development from the backlog. The user (often playing the Product Owner role) reviews and approves the story before implementation. Once approved, the **Dev** agent writes code to implement the story's tasks by loading the story file and executing tasks sequentially. When development is complete, the **QA** agent is invoked to run tests on the new code (such as executing unit tests, integration tests, etc.). If the QA tests uncover bugs or failed criteria, the workflow loops back – the Dev agent addresses the issues and the QA agent re-tests the fixes. Once all tests pass, the **Product Owner (PO)** (or user acting as PO) verifies the story against acceptance criteria and marks it as done. This iterative loop continues until the story is completed to satisfaction, ensuring high quality through Dev–QA collaboration.
+In this lifecycle, the **Scrum Master (SM)** agent creates a draft story from the backlog. The **Product Owner (PO)** then reviews and approves the story before implementation, ensuring it meets acceptance criteria and business requirements. Once approved, the **Dev** agent writes code to implement the story's tasks by loading the story file and executing tasks sequentially. When development is complete, the **QA** agent is invoked to run tests on the new code (such as executing unit tests, integration tests, etc.). If the QA tests uncover bugs or failed criteria, the workflow loops back – the Dev agent addresses the issues and the QA agent re-tests the fixes. Once all tests pass, the **Product Owner (PO)** performs final story acceptance, verifying the story meets all acceptance criteria. If the story meets requirements, the PO marks it as done. If not, the PO provides feedback and the story returns to development. This iterative loop continues until the story is completed to satisfaction, ensuring high quality through SM–PO–Dev–QA collaboration. When all stories in an epic are complete, the PO can optionally perform an epic retrospective.
 
 *(The Dev–QA cycle aligns with BMAD’s Quality Assurance phase where QA does testing and the Dev fixes any bugs.)*
 
@@ -809,21 +817,29 @@ graph TD
 ```mermaid
 graph TD
     A["Planning Complete:<br/>PRD & Architecture Aligned"] --> B["SM: Create Sprint<br/>Backlog from Epics"]
-    B --> C["SM: Create<br/>User Story Doc"]
-    C --> D{"Story Approved<br/>by PO?"}
-    D -->|Yes| E["Dev: Code &<br/>Write Tests"]
-    D -->|No| C
-    E --> F["Dev: Run Tests &<br/>Validate"]
-    F --> G["Dev: Mark Ready<br/>for Review"]
-    G --> H{"QA Review<br/>Needed?"}
-    H -->|Yes| I["QA: Review Code &<br/>Run Tests"]
-    H -->|No| J["PO: Accept Story"]
-    I --> K{"Issues Found?"}
-    K -->|Yes| E
-    K -->|No| J
-    J --> L{"More Stories<br/>in Sprint?"}
-    L -->|Yes| C
-    L -->|No| M["Sprint Done"]
+    B --> C["SM: Create<br/>User Story Doc<br/>Status: Draft"]
+    C --> D["PO: Review Story<br/>Validate acceptance criteria"]
+    D --> E{"Story Approved<br/>by PO?"}
+    E -->|Yes| F["PO: Update Status<br/>Draft → Approved"]
+    E -->|No| G["PO: Provide Feedback"]
+    G --> C
+    F --> H["Dev: Code &<br/>Write Tests"]
+    H --> I["Dev: Run Tests &<br/>Validate"]
+    I --> J["Dev: Mark Ready<br/>for Review"]
+    J --> K{"QA Review<br/>Needed?"}
+    K -->|Yes| L["QA: Review Code &<br/>Run Tests"]
+    K -->|No| M["PO: Final Story Acceptance"]
+    L --> N{"Issues Found?"}
+    N -->|Yes| H
+    N -->|No| M
+    M --> O{"Story Meets<br/>Acceptance Criteria?"}
+    O -->|Yes| P["PO: Mark Story Done"]
+    O -->|No| Q["PO: Provide Feedback"]
+    Q --> H
+    P --> R{"More Stories<br/>in Sprint?"}
+    R -->|Yes| C
+    R -->|No| S["PO: Sprint Review<br/>(Optional)"]
+    S --> T["Sprint Done"]
 ```
 
 **Step-by-Step Guide:**
