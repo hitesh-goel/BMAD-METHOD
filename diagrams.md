@@ -177,7 +177,7 @@ flowchart TD
     A6 --> A7
     A7 --> A8(Architect: Create comprehensive architecture doc)
     A8 --> A9{Validation Required?}
-    A9 -->|Yes| A10("Architect: *execute-checklist architect-checklist")
+    A9 -->|Yes| A10(Architect: *execute-checklist architect-checklist)
     A9 -->|No| A11(Architect: Deliver Architecture Doc)
     A10 --> A12(Architect: 380-point validation process)
     A12 --> A13{All Checks Pass?}
@@ -227,7 +227,7 @@ flowchart TD
     D11 --> D3
     D10 -->|No| D12(Dev: Run complete story validation)
     D12 --> D13(Dev: Update File List with all changes)
-    D13 --> D14(Dev: Mark story "Ready for Review")
+    D13 --> D14(Dev: Mark story `Ready for Review`)
     D14 --> U2(User: Story ready for QA)
 ```
 
@@ -259,7 +259,7 @@ The **QA** agent (Quinn) is a senior developer and test architect with the autho
 
 ```mermaid
 flowchart TD
-    U(Dev: Story "Ready for Review") --> Q1(QA: Read complete story file)
+    U(Dev: Story `Ready for Review`) --> Q1(QA: Read complete story file)
     Q1 --> Q2(QA: Verify File List completeness)
     Q2 --> Q3(QA: Senior developer code review)
     Q3 --> Q4(QA: Identify refactoring opportunities)
@@ -277,8 +277,8 @@ flowchart TD
     Q14 --> Q15(QA: Append QA Results to story)
     Q13 -->|No| Q15
     Q15 --> Q16{Final Approval?}
-    Q16 -->|Approved| Q17(QA: Mark story "Done")
-    Q16 -->|Changes Required| Q18(QA: Keep status "Review" with unchecked items)
+    Q16 -->|Approved| Q17(QA: Mark story `Done`)
+    Q16 -->|Changes Required| Q18(QA: Keep status `Review` with unchecked items)
     Q17 --> U2(Story completed and approved)
     Q18 --> U3(Dev: Address remaining unchecked items)
 ```
@@ -296,7 +296,7 @@ flowchart TD
 4. **Active Refactoring**: Directly improves code and explains improvements
 5. **Standards Compliance**: Validates coding standards, project structure, testing strategy
 6. **Test Enhancement**: Adds missing critical tests and improves test coverage
-7. **Final Approval**: Marks story "Done" or provides specific improvement checklist
+7. **Final Approval**: Marks story `Done` or provides specific improvement checklist
 
 **QA Results Documentation**: Appends comprehensive results including:
 - Code quality assessment with overall implementation evaluation
