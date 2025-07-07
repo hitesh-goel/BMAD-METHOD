@@ -21,6 +21,76 @@ class WebBuilder {
     return yaml.load(content);
   }
 
+  convertToWebPath(filePath, bundleRoot = 'bmad-core') {
+    // Convert absolute paths to web bundle paths with dot prefix
+    // All resources get installed under the bundle root, so use that path
+    const relativePath = path.relative(this.rootDir, filePath);
+    const pathParts = relativePath.split(path.sep);
+    
+    let resourcePath;
+    if (pathParts[0] === 'expansion-packs') {
+      // For expansion packs, remove 'expansion-packs/packname' and use the rest
+      resourcePath = pathParts.slice(2).join('/');
+    } else {
+      // For bmad-core, common, etc., remove the first part
+      resourcePath = pathParts.slice(1).join('/');
+    }
+    
+    return `.${bundleRoot}/${resourcePath}`;
+  }
+
+  generateWebInstructions(bundleType, packName = null) {
+    // Generate dynamic web instructions based on bundle type
+    const rootExample = packName ? `.${packName}` : '.bmad-core';
+    const examplePath = packName ? `.${packName}/folder/filename.md` : '.bmad-core/folder/filename.md';
+    const personasExample = packName ? `.${packName}/personas/analyst.md` : '.bmad-core/personas/analyst.md';
+    const tasksExample = packName ? `.${packName}/tasks/create-story.md` : '.bmad-core/tasks/create-story.md';
+    const utilsExample = packName ? `.${packName}/utils/template-format.md` : '.bmad-core/utils/template-format.md';
+    const tasksRef = packName ? `.${packName}/tasks/create-story.md` : '.bmad-core/tasks/create-story.md';
+
+    return `# Web Agent Bundle Instructions
+
+You are now operating as a specialized AI agent from the BMad-Method framework. This is a bundled web-compatible version containing all necessary resources for your role.
+
+## Important Instructions
+
+1. **Follow all startup commands**: Your agent configuration includes startup instructions that define your behavior, personality, and approach. These MUST be followed exactly.
+
+2. **Resource Navigation**: This bundle contains all resources you need. Resources are marked with tags like:
+
+- \`==================== START: ${examplePath} ====================\`
+- \`==================== END: ${examplePath} ====================\`
+
+When you need to reference a resource mentioned in your instructions:
+
+- Look for the corresponding START/END tags
+- The format is always the full path with dot prefix (e.g., \`${personasExample}\`, \`${tasksExample}\`)
+- If a section is specified (e.g., \`{root}/tasks/create-story.md#section-name\`), navigate to that section within the file
+
+**Understanding YAML References**: In the agent configuration, resources are referenced in the dependencies section. For example:
+
+\`\`\`yaml
+dependencies:
+  utils:
+    - template-format
+  tasks:
+    - create-story
+\`\`\`
+
+These references map directly to bundle sections:
+
+- \`utils: template-format\` → Look for \`==================== START: ${utilsExample} ====================\`
+- \`tasks: create-story\` → Look for \`==================== START: ${tasksRef} ====================\`
+
+3. **Execution Context**: You are operating in a web environment. All your capabilities and knowledge are contained within this bundle. Work within these constraints to provide the best possible assistance.
+
+4. **Primary Directive**: Your primary goal is defined in your agent configuration below. Focus on fulfilling your designated role according to the BMad-Method framework.
+
+---
+
+`;
+  }
+
   async cleanOutputDirs() {
     for (const dir of this.outputDirs) {
       try {
@@ -73,16 +143,18 @@ class WebBuilder {
 
   async buildAgentBundle(agentId) {
     const dependencies = await this.resolver.resolveAgentDependencies(agentId);
-    const template = await fs.readFile(this.templatePath, "utf8");
+    const template = this.generateWebInstructions('agent');
 
     const sections = [template];
 
     // Add agent configuration
-    sections.push(this.formatSection(dependencies.agent.path, dependencies.agent.content));
+    const agentPath = this.convertToWebPath(dependencies.agent.path, 'bmad-core');
+    sections.push(this.formatSection(agentPath, dependencies.agent.content, 'bmad-core'));
 
     // Add all dependencies
     for (const resource of dependencies.resources) {
-      sections.push(this.formatSection(resource.path, resource.content));
+      const resourcePath = this.convertToWebPath(resource.path, 'bmad-core');
+      sections.push(this.formatSection(resourcePath, resource.content, 'bmad-core'));
     }
 
     return sections.join("\n");
@@ -90,21 +162,24 @@ class WebBuilder {
 
   async buildTeamBundle(teamId) {
     const dependencies = await this.resolver.resolveTeamDependencies(teamId);
-    const template = await fs.readFile(this.templatePath, "utf8");
+    const template = this.generateWebInstructions('team');
 
     const sections = [template];
 
     // Add team configuration
-    sections.push(this.formatSection(dependencies.team.path, dependencies.team.content));
+    const teamPath = this.convertToWebPath(dependencies.team.path, 'bmad-core');
+    sections.push(this.formatSection(teamPath, dependencies.team.content, 'bmad-core'));
 
     // Add all agents
     for (const agent of dependencies.agents) {
-      sections.push(this.formatSection(agent.path, agent.content));
+      const agentPath = this.convertToWebPath(agent.path, 'bmad-core');
+      sections.push(this.formatSection(agentPath, agent.content, 'bmad-core'));
     }
 
     // Add all deduplicated resources
     for (const resource of dependencies.resources) {
-      sections.push(this.formatSection(resource.path, resource.content));
+      const resourcePath = this.convertToWebPath(resource.path, 'bmad-core');
+      sections.push(this.formatSection(resourcePath, resource.content, 'bmad-core'));
     }
 
     return sections.join("\n");
@@ -136,6 +211,7 @@ class WebBuilder {
         parsed["activation-instructions"] = parsed["activation-instructions"].filter(
           (instruction) => {
             return (
+              typeof instruction === 'string' &&
               !instruction.startsWith("IDE-FILE-RESOLUTION:") &&
               !instruction.startsWith("REQUEST-RESOLUTION:")
             );
@@ -150,7 +226,7 @@ class WebBuilder {
       const agentName = parsed.agent?.id || "agent";
 
       // Build the new content with just the agent header and YAML
-      const newHeader = `# ${agentName}\n\nCRITICAL: Read the full YML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n`;
+      const newHeader = `# ${agentName}\n\nCRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n`;
       const afterYaml = content.substring(yamlEndIndex);
 
       return newHeader + "```yaml\n" + cleanedYaml.trim() + "\n```" + afterYaml;
@@ -161,13 +237,16 @@ class WebBuilder {
     }
   }
 
-  formatSection(path, content) {
+  formatSection(path, content, bundleRoot = 'bmad-core') {
     const separator = "====================";
 
     // Process agent content if this is an agent file
-    if (path.startsWith("agents#")) {
+    if (path.includes("/agents/")) {
       content = this.processAgentContent(content);
     }
+
+    // Replace {root} references with the actual bundle root
+    content = this.replaceRootReferences(content, bundleRoot);
 
     return [
       `${separator} START: ${path} ${separator}`,
@@ -175,6 +254,11 @@ class WebBuilder {
       `${separator} END: ${path} ${separator}`,
       "",
     ].join("\n");
+  }
+
+  replaceRootReferences(content, bundleRoot) {
+    // Replace {root} with the appropriate bundle root path
+    return content.replace(/\{root\}/g, `.${bundleRoot}`);
   }
 
   async validate() {
@@ -288,13 +372,14 @@ class WebBuilder {
   }
 
   async buildExpansionAgentBundle(packName, packDir, agentName) {
-    const template = await fs.readFile(this.templatePath, "utf8");
+    const template = this.generateWebInstructions('expansion-agent', packName);
     const sections = [template];
 
     // Add agent configuration
     const agentPath = path.join(packDir, "agents", `${agentName}.md`);
     const agentContent = await fs.readFile(agentPath, "utf8");
-    sections.push(this.formatSection(`agents#${agentName}`, agentContent));
+    const agentWebPath = this.convertToWebPath(agentPath, packName);
+    sections.push(this.formatSection(agentWebPath, agentContent, packName));
 
     // Resolve and add agent dependencies
     const yamlContent = yamlUtils.extractYamlFromAgent(agentContent);
@@ -309,64 +394,57 @@ class WebBuilder {
             if (Array.isArray(resources)) {
               for (const resourceName of resources) {
                 let found = false;
-                const extensions = [".md", ".yaml"];
 
                 // Try expansion pack first
-                for (const ext of extensions) {
-                  const resourcePath = path.join(packDir, resourceType, `${resourceName}${ext}`);
-                  try {
-                    const resourceContent = await fs.readFile(resourcePath, "utf8");
-                    sections.push(
-                      this.formatSection(`${resourceType}#${resourceName}`, resourceContent)
-                    );
-                    found = true;
-                    break;
-                  } catch (error) {
-                    // Not in expansion pack, continue
-                  }
+                const resourcePath = path.join(packDir, resourceType, resourceName);
+                try {
+                  const resourceContent = await fs.readFile(resourcePath, "utf8");
+                  const resourceWebPath = this.convertToWebPath(resourcePath, packName);
+                  sections.push(
+                    this.formatSection(resourceWebPath, resourceContent, packName)
+                  );
+                  found = true;
+                } catch (error) {
+                  // Not in expansion pack, continue
                 }
 
                 // If not found in expansion pack, try core
                 if (!found) {
-                  for (const ext of extensions) {
-                    const corePath = path.join(
-                      this.rootDir,
-                      "bmad-core",
-                      resourceType,
-                      `${resourceName}${ext}`
+                  const corePath = path.join(
+                    this.rootDir,
+                    "bmad-core",
+                    resourceType,
+                    resourceName
+                  );
+                  try {
+                    const coreContent = await fs.readFile(corePath, "utf8");
+                    const coreWebPath = this.convertToWebPath(corePath, packName);
+                    sections.push(
+                      this.formatSection(coreWebPath, coreContent, packName)
                     );
-                    try {
-                      const coreContent = await fs.readFile(corePath, "utf8");
-                      sections.push(
-                        this.formatSection(`${resourceType}#${resourceName}`, coreContent)
-                      );
-                      found = true;
-                      break;
-                    } catch (error) {
-                      // Not in core either, continue
-                    }
+                    found = true;
+                  } catch (error) {
+                    // Not in core either, continue
                   }
                 }
 
                 // If not found in core, try common folder
                 if (!found) {
-                  for (const ext of extensions) {
-                    const commonPath = path.join(
-                      this.rootDir,
-                      "common",
-                      resourceType,
-                      `${resourceName}${ext}`
+                  const commonPath = path.join(
+                    this.rootDir,
+                    "common",
+                    resourceType,
+                    resourceName
+                  );
+                  try {
+                    const commonContent = await fs.readFile(commonPath, "utf8");
+                    const commonWebPath = this.convertToWebPath(commonPath, packName);
+                    sections.push(
+                      this.formatSection(commonWebPath, commonContent, packName)
                     );
-                    try {
-                      const commonContent = await fs.readFile(commonPath, "utf8");
-                      sections.push(
-                        this.formatSection(`${resourceType}#${resourceName}`, commonContent)
-                      );
-                      found = true;
-                      break;
-                    } catch (error) {
-                      // Not in common either, continue
-                    }
+                    found = true;
+                  } catch (error) {
+                    // Not in common either, continue
                   }
                 }
 
@@ -388,7 +466,7 @@ class WebBuilder {
   }
 
   async buildExpansionTeamBundle(packName, packDir, teamConfigPath) {
-    const template = await fs.readFile(this.templatePath, "utf8");
+    const template = this.generateWebInstructions('expansion-team', packName);
 
     const sections = [template];
 
@@ -396,7 +474,8 @@ class WebBuilder {
     const teamContent = await fs.readFile(teamConfigPath, "utf8");
     const teamFileName = path.basename(teamConfigPath, ".yaml");
     const teamConfig = this.parseYaml(teamContent);
-    sections.push(this.formatSection(`agent-teams#${teamFileName}`, teamContent));
+    const teamWebPath = this.convertToWebPath(teamConfigPath, packName);
+    sections.push(this.formatSection(teamWebPath, teamContent, packName));
 
     // Get list of expansion pack agents
     const expansionAgents = new Set();
@@ -421,8 +500,7 @@ class WebBuilder {
         for (const resourceFile of resourceFiles.filter(
           (f) => f.endsWith(".md") || f.endsWith(".yaml")
         )) {
-          const fileName = resourceFile.replace(/\.(md|yaml)$/, "");
-          expansionResources.set(`${resourceDir}#${fileName}`, true);
+          expansionResources.set(`${resourceDir}#${resourceFile}`, true);
         }
       } catch (error) {
         // Directory might not exist, that's fine
@@ -446,7 +524,8 @@ class WebBuilder {
         // Use expansion pack version (override)
         const agentPath = path.join(agentsDir, `${agentId}.md`);
         const agentContent = await fs.readFile(agentPath, "utf8");
-        sections.push(this.formatSection(`agents#${agentId}`, agentContent));
+        const expansionAgentWebPath = this.convertToWebPath(agentPath, packName);
+        sections.push(this.formatSection(expansionAgentWebPath, agentContent, packName));
 
         // Parse and collect dependencies from expansion agent
         const agentYaml = agentContent.match(/```yaml\n([\s\S]*?)\n```/);
@@ -470,11 +549,12 @@ class WebBuilder {
           }
         }
       } else {
-        // Use core BMAD version
+        // Use core BMad version
         try {
           const coreAgentPath = path.join(this.rootDir, "bmad-core", "agents", `${agentId}.md`);
           const coreAgentContent = await fs.readFile(coreAgentPath, "utf8");
-          sections.push(this.formatSection(`agents#${agentId}`, coreAgentContent));
+          const coreAgentWebPath = this.convertToWebPath(coreAgentPath, packName);
+          sections.push(this.formatSection(coreAgentWebPath, coreAgentContent, packName));
 
           // Parse and collect dependencies from core agent
           const yamlContent = yamlUtils.extractYamlFromAgent(coreAgentContent, true);
@@ -507,52 +587,45 @@ class WebBuilder {
     // Always prefer expansion pack versions if they exist
     for (const [key, dep] of allDependencies) {
       let found = false;
-      const extensions = [".md", ".yaml"];
 
       // Always check expansion pack first, even if the dependency came from a core agent
       if (expansionResources.has(key)) {
         // We know it exists in expansion pack, find and load it
-        for (const ext of extensions) {
-          const expansionPath = path.join(packDir, dep.type, `${dep.name}${ext}`);
-          try {
-            const content = await fs.readFile(expansionPath, "utf8");
-            sections.push(this.formatSection(key, content));
-            console.log(`      ✓ Using expansion override for ${key}`);
-            found = true;
-            break;
-          } catch (error) {
-            // Try next extension
-          }
+        const expansionPath = path.join(packDir, dep.type, dep.name);
+        try {
+          const content = await fs.readFile(expansionPath, "utf8");
+          const expansionWebPath = this.convertToWebPath(expansionPath, packName);
+          sections.push(this.formatSection(expansionWebPath, content, packName));
+          console.log(`      ✓ Using expansion override for ${key}`);
+          found = true;
+        } catch (error) {
+          // Try next extension
         }
       }
 
       // If not found in expansion pack (or doesn't exist there), try core
       if (!found) {
-        for (const ext of extensions) {
-          const corePath = path.join(this.rootDir, "bmad-core", dep.type, `${dep.name}${ext}`);
-          try {
-            const content = await fs.readFile(corePath, "utf8");
-            sections.push(this.formatSection(key, content));
-            found = true;
-            break;
-          } catch (error) {
-            // Not in core either, continue
-          }
+        const corePath = path.join(this.rootDir, "bmad-core", dep.type, dep.name);
+        try {
+          const content = await fs.readFile(corePath, "utf8");
+          const coreWebPath = this.convertToWebPath(corePath, packName);
+          sections.push(this.formatSection(coreWebPath, content, packName));
+          found = true;
+        } catch (error) {
+          // Not in core either, continue
         }
       }
 
       // If not found in core, try common folder
       if (!found) {
-        for (const ext of extensions) {
-          const commonPath = path.join(this.rootDir, "common", dep.type, `${dep.name}${ext}`);
-          try {
-            const content = await fs.readFile(commonPath, "utf8");
-            sections.push(this.formatSection(key, content));
-            found = true;
-            break;
-          } catch (error) {
-            // Not in common either, continue
-          }
+        const commonPath = path.join(this.rootDir, "common", dep.type, dep.name);
+        try {
+          const content = await fs.readFile(commonPath, "utf8");
+          const commonWebPath = this.convertToWebPath(commonPath, packName);
+          sections.push(this.formatSection(commonWebPath, content, packName));
+          found = true;
+        } catch (error) {
+          // Not in common either, continue
         }
       }
 
@@ -576,7 +649,9 @@ class WebBuilder {
           // Only add if not already included as a dependency
           const resourceKey = `${resourceDir}#${fileName}`;
           if (!allDependencies.has(resourceKey)) {
-            sections.push(this.formatSection(resourceKey, fileContent));
+            const fullResourcePath = path.join(resourcePath, resourceFile);
+            const resourceWebPath = this.convertToWebPath(fullResourcePath, packName);
+            sections.push(this.formatSection(resourceWebPath, fileContent, packName));
           }
         }
       } catch (error) {

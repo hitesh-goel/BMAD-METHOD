@@ -26,10 +26,10 @@ class V3ToV4Upgrader {
 
       // 1. Welcome message
       console.log(
-        chalk.bold("\nWelcome to BMAD-METHOD V3 to V4 Upgrade Tool\n")
+        chalk.bold("\nWelcome to BMad-Method V3 to V4 Upgrade Tool\n")
       );
       console.log(
-        "This tool will help you upgrade your BMAD-METHOD V3 project to V4.\n"
+        "This tool will help you upgrade your BMad-Method V3 project to V4.\n"
       );
       console.log(chalk.cyan("What this tool does:"));
       console.log("- Creates a backup of your V3 files (.bmad-v3-backup/)");
@@ -560,6 +560,7 @@ class V3ToV4Upgrader {
         cursor: "Rules created in .cursor/rules/",
         "claude-code": "Commands created in .claude/commands/",
         windsurf: "Rules created in .windsurf/rules/",
+        trae: "Rules created in.trae/rules/",
         roo: "Custom modes created in .roomodes",
         cline: "Rules created in .clinerules/",
       };

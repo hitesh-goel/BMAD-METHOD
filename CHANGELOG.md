@@ -1,3 +1,100 @@
+## [4.27.4](https://github.com/bmadcode/BMAD-METHOD/compare/v4.27.3...v4.27.4) (2025-07-07)
+
+
+### Bug Fixes
+
+* doc updates ([1b86cd4](https://github.com/bmadcode/BMAD-METHOD/commit/1b86cd4db3644ca2b2b4a94821cc8b5690d78e0a))
+
+## [4.27.3](https://github.com/bmadcode/BMAD-METHOD/compare/v4.27.2...v4.27.3) (2025-07-07)
+
+
+### Bug Fixes
+
+* remove test zoo folder ([908dcd7](https://github.com/bmadcode/BMAD-METHOD/commit/908dcd7e9afae3fd23cd894c0d09855fc9c42d0e))
+
+## [4.27.2](https://github.com/bmadcode/BMAD-METHOD/compare/v4.27.1...v4.27.2) (2025-07-07)
+
+
+### Bug Fixes
+
+* improve output ([a5ffe7b](https://github.com/bmadcode/BMAD-METHOD/commit/a5ffe7b9b209ae02a9d97adf60fe73c0bc9701e4))
+
+## [4.27.1](https://github.com/bmadcode/BMAD-METHOD/compare/v4.27.0...v4.27.1) (2025-07-07)
+
+
+### Bug Fixes
+
+* build web bundles with new file extension includsion ([92201ae](https://github.com/bmadcode/BMAD-METHOD/commit/92201ae7ede620ec09b4764edaed97be42a3b78f))
+
+# [4.27.0](https://github.com/bmadcode/BMAD-METHOD/compare/v4.26.0...v4.27.0) (2025-07-06)
+
+
+### Bug Fixes
+
+* readme consolidation and version bumps ([0a61d3d](https://github.com/bmadcode/BMAD-METHOD/commit/0a61d3de4af880f6e3bf934a92b1827754ed8ce6))
+
+
+### Features
+
+* big improvement to advanced elicitation ([1bc9960](https://github.com/bmadcode/BMAD-METHOD/commit/1bc9960808098fba6b43850311799022319df841))
+* experimental doc creator v2 and template system ([b785371](https://github.com/bmadcode/BMAD-METHOD/commit/b78537115da06b01e140833fd1d73950c7f2e41f))
+* Massive improvement to the brainstorming task! ([9f53caf](https://github.com/bmadcode/BMAD-METHOD/commit/9f53caf4c6f9c67195b1aae14d54987f81d76e07))
+* WIP create-docv2 ([c107af0](https://github.com/bmadcode/BMAD-METHOD/commit/c107af05984718c1af2cf80118353e8d2e6f906f))
+
+# [4.26.0](https://github.com/bmadcode/BMAD-METHOD/compare/v4.25.1...v4.26.0) (2025-07-06)
+
+
+### Features
+
+* **trae:** add support for trae ide integration ([#298](https://github.com/bmadcode/BMAD-METHOD/issues/298)) ([fae0f5f](https://github.com/bmadcode/BMAD-METHOD/commit/fae0f5ff73a603dc1aacc29f184e2a4138446524))
+
+## [4.25.1](https://github.com/bmadcode/BMAD-METHOD/compare/v4.25.0...v4.25.1) (2025-07-06)
+
+
+### Bug Fixes
+
+* spelling errors in documentation. ([#297](https://github.com/bmadcode/BMAD-METHOD/issues/297)) ([47b9d9f](https://github.com/bmadcode/BMAD-METHOD/commit/47b9d9f3e87be62c8520ed6cb0048df727a9534f))
+
+# [4.25.0](https://github.com/bmadcode/BMAD-METHOD/compare/v4.24.6...v4.25.0) (2025-07-05)
+
+
+### Bug Fixes
+
+* update web bundles ([42684e6](https://github.com/bmadcode/BMAD-METHOD/commit/42684e68af4396797962f3f851147523a6741608))
+
+
+### Features
+
+* improvements to agent task usage, sm story drafting, dev implementation, qa review process, and addition of a new sm independant review of a draft story ([2874a54](https://github.com/bmadcode/BMAD-METHOD/commit/2874a54a9b25b48c199b2e9dc63a9555e716c636))
+
+## [4.24.6](https://github.com/bmadcode/BMAD-METHOD/compare/v4.24.5...v4.24.6) (2025-07-04)
+
+
+### Bug Fixes
+
+* version bump and web build fix ([1c845e5](https://github.com/bmadcode/BMAD-METHOD/commit/1c845e5b2c77a77d887d8216152ba09110c72e40))
+
+## [4.24.5](https://github.com/bmadcode/BMAD-METHOD/compare/v4.24.4...v4.24.5) (2025-07-04)
+
+
+### Bug Fixes
+
+* yaml standardization in files and installer actions ([094f9f3](https://github.com/bmadcode/BMAD-METHOD/commit/094f9f3eabf563c9a89ecaf360fed63386b46ed4))
+
+## [4.24.4](https://github.com/bmadcode/BMAD-METHOD/compare/v4.24.3...v4.24.4) (2025-07-04)
+
+
+### Bug Fixes
+
+* documentation updates ([2018ad0](https://github.com/bmadcode/BMAD-METHOD/commit/2018ad07c7d4c68efb3c24d85ac7612942c6df9c))
+
+## [4.24.3](https://github.com/bmadcode/BMAD-METHOD/compare/v4.24.2...v4.24.3) (2025-07-04)
+
+
+### Bug Fixes
+
+* update YAML library from 'yaml' to 'js-yaml' in resolveExpansionPackCoreAgents for consistency ([#295](https://github.com/bmadcode/BMAD-METHOD/issues/295)) ([03f30ad](https://github.com/bmadcode/BMAD-METHOD/commit/03f30ad28b282fbb4fa5a6ed6b57d0327218cce0))
+
 ## [4.24.2](https://github.com/bmadcode/BMAD-METHOD/compare/v4.24.1...v4.24.2) (2025-07-03)
 
 
@@ -31,7 +128,7 @@
 
 ### Features
 
-* VS Code Copilot integration ([#284](https://github.com/bmadcode/BMAD-METHOD/issues/284)) ([1a4ca4f](https://github.com/bmadcode/BMAD-METHOD/commit/1a4ca4ffa630c2d4156bdd7a040d4c2274801757))
+* Github Copilot integration ([#284](https://github.com/bmadcode/BMAD-METHOD/issues/284)) ([1a4ca4f](https://github.com/bmadcode/BMAD-METHOD/commit/1a4ca4ffa630c2d4156bdd7a040d4c2274801757))
 
 ## [4.22.1](https://github.com/bmadcode/BMAD-METHOD/compare/v4.22.0...v4.22.1) (2025-06-30)
 

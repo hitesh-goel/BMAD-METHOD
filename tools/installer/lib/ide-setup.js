@@ -57,14 +57,16 @@ class IdeSetup {
         return this.setupClaudeCode(installDir, selectedAgent);
       case "windsurf":
         return this.setupWindsurf(installDir, selectedAgent);
+      case "trae":
+        return this.setupTrae(installDir, selectedAgent);
       case "roo":
         return this.setupRoo(installDir, selectedAgent);
       case "cline":
         return this.setupCline(installDir, selectedAgent);
       case "gemini":
         return this.setupGeminiCli(installDir, selectedAgent);
-      case "vs-code-copilot":
-        return this.setupVsCodeCopilot(installDir, selectedAgent, spinner);
+      case "github-copilot":
+        return this.setupGitHubCopilot(installDir, selectedAgent, spinner);
       default:
         console.log(chalk.yellow(`\nIDE ${ide} not yet supported`));
         return false;
@@ -98,7 +100,7 @@ class IdeSetup {
         )} agent persona.\n\n`;
         mdcContent += "## Agent Activation\n\n";
         mdcContent +=
-          "CRITICAL: Read the full YML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n";
+          "CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n";
         mdcContent += "```yaml\n";
         // Extract just the YAML content from the agent file
         const yamlContent = extractYamlFromAgent(agentContent);
@@ -116,7 +118,7 @@ class IdeSetup {
         mdcContent += `When the user types \`@${agentId}\`, activate this ${await this.getAgentTitle(
           agentId,
           installDir
-        )} persona and follow all instructions defined in the YML configuration above.\n`;
+        )} persona and follow all instructions defined in the YAML configuration above.\n`;
 
         await fileManager.writeFile(mdcPath, mdcContent);
         console.log(chalk.green(`✓ Created rule: ${agentId}.mdc`));
@@ -180,7 +182,7 @@ class IdeSetup {
         )} agent persona.\n\n`;
         mdContent += "## Agent Activation\n\n";
         mdContent +=
-          "CRITICAL: Read the full YML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n";
+          "CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n";
         mdContent += "```yaml\n";
         // Extract just the YAML content from the agent file
         const yamlContent = extractYamlFromAgent(agentContent);
@@ -198,7 +200,7 @@ class IdeSetup {
         mdContent += `When the user types \`@${agentId}\`, activate this ${await this.getAgentTitle(
           agentId,
           installDir
-        )} persona and follow all instructions defined in the YML configuration above.\n`;
+        )} persona and follow all instructions defined in the YAML configuration above.\n`;
 
         await fileManager.writeFile(mdPath, mdContent);
         console.log(chalk.green(`✓ Created rule: ${agentId}.md`));
@@ -208,6 +210,55 @@ class IdeSetup {
     console.log(chalk.green(`\n✓ Created Windsurf rules in ${windsurfRulesDir}`));
 
     return true;
+  }
+
+  async setupTrae(installDir, selectedAgent) {
+    const traeRulesDir = path.join(installDir, ".trae", "rules");
+    const agents = selectedAgent? [selectedAgent] : await this.getAllAgentIds(installDir);
+    
+    await fileManager.ensureDirectory(traeRulesDir);
+    
+    for (const agentId of agents) {
+      // Find the agent file
+      const agentPath = await this.findAgentPath(agentId, installDir);
+      
+      if (agentPath) {
+        const agentContent = await fileManager.readFile(agentPath);
+        const mdPath = path.join(traeRulesDir, `${agentId}.md`);
+        
+        // Create MD content (similar to Cursor but without frontmatter)
+        let mdContent = `# ${agentId.toUpperCase()} Agent Rule\n\n`;
+        mdContent += `This rule is triggered when the user types \`@${agentId}\` and activates the ${await this.getAgentTitle(
+          agentId,
+          installDir
+        )} agent persona.\n\n`;
+        mdContent += "## Agent Activation\n\n";
+        mdContent +=
+          "CRITICAL: Read the full YAML, start activation to alter your state of being, follow startup section instructions, stay in this being until told to exit this mode:\n\n";
+        mdContent += "```yaml\n";
+        // Extract just the YAML content from the agent file
+        const yamlContent = extractYamlFromAgent(agentContent);
+        if (yamlContent) {
+          mdContent += yamlContent;
+        }
+        else {
+          // If no YAML found, include the whole content minus the header
+          mdContent += agentContent.replace(/^#.*$/m, "").trim();
+        }
+        mdContent += "\n```\n\n";
+        mdContent += "## File Reference\n\n";
+        const relativePath = path.relative(installDir, agentPath).replace(/\\/g, '/');
+        mdContent += `The complete agent definition is available in [${relativePath}](${relativePath}).\n\n`;
+        mdContent += "## Usage\n\n";
+        mdContent += `When the user types \`@${agentId}\`, activate this ${await this.getAgentTitle(
+          agentId,
+          installDir
+        )} persona and follow all instructions defined in the YAML configuration above.\n`;
+        
+        await fileManager.writeFile(mdPath, mdContent);
+        console.log(chalk.green(`✓ Created rule: ${agentId}.md`));
+      }
+    }
   }
 
   async findAgentPath(agentId, installDir) {
@@ -362,7 +413,7 @@ class IdeSetup {
           newModesContent += `   whenToUse: ${whenToUse}\n`;
           // Get relative path from installDir to agent file
           const relativePath = path.relative(installDir, agentPath).replace(/\\/g, '/');
-          newModesContent += `   customInstructions: CRITICAL Read the full YML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`;
+          newModesContent += `   customInstructions: CRITICAL Read the full YAML from ${relativePath} start activation to alter your state of being follow startup section instructions stay in this being until told to exit this mode\n`;
           newModesContent += `   groups:\n`;
           newModesContent += `    - read\n`;
 
@@ -515,7 +566,7 @@ class IdeSetup {
     return true;
   }
 
-  async setupVsCodeCopilot(installDir, selectedAgent, spinner = null) {
+  async setupGitHubCopilot(installDir, selectedAgent, spinner = null) {
     await initializeModules();
     
     // Configure VS Code workspace settings first to avoid UI conflicts with loading spinners
@@ -559,8 +610,8 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
       }
     }
 
-    console.log(chalk.green(`\n✓ VS Code Copilot setup complete!`));
-    console.log(chalk.dim(`You can now find the BMAD agents in the Chat view's mode selector.`));
+    console.log(chalk.green(`\n✓ Github Copilot setup complete!`));
+    console.log(chalk.dim(`You can now find the BMad agents in the Chat view's mode selector.`));
 
     return true;
   }
@@ -578,7 +629,7 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
       try {
         const existingContent = await fileManager.readFile(settingsPath);
         existingSettings = JSON.parse(existingContent);
-        console.log(chalk.yellow("Found existing .vscode/settings.json. Merging BMAD settings..."));
+        console.log(chalk.yellow("Found existing .vscode/settings.json. Merging BMad settings..."));
       } catch (error) {
         console.warn(chalk.yellow("Could not parse existing settings.json. Creating new one."));
         existingSettings = {};
@@ -587,15 +638,15 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
     
     // Clear any previous output and add spacing to avoid conflicts with loaders
     console.log('\n'.repeat(2));
-    console.log(chalk.blue("🔧 VS Code Copilot Agent Settings Configuration"));
-    console.log(chalk.dim("BMAD works best with specific VS Code settings for optimal agent experience."));
+    console.log(chalk.blue("🔧 Github Copilot Agent Settings Configuration"));
+    console.log(chalk.dim("BMad works best with specific VS Code settings for optimal agent experience."));
     console.log(''); // Add extra spacing
     
     const { configChoice } = await inquirer.prompt([
       {
         type: 'list',
         name: 'configChoice',
-        message: 'How would you like to configure VS Code Copilot settings?',
+        message: 'How would you like to configure Github Copilot settings?',
         choices: [
           {
             name: 'Use recommended defaults (fastest setup)',
@@ -638,7 +689,7 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
         "github.copilot.chat.agent.autoFix": true,
         "chat.tools.autoApprove": false
       };
-      console.log(chalk.green("✓ Using recommended BMAD defaults for VS Code Copilot settings"));
+      console.log(chalk.green("✓ Using recommended BMad defaults for Github Copilot settings"));
     } else {
       // Manual configuration
       console.log(chalk.blue("\n📋 Let's configure each setting for your preferences:"));
@@ -696,7 +747,7 @@ tools: ['changes', 'codebase', 'fetch', 'findTestFiles', 'githubRepo', 'problems
       }
       
       bmadSettings = {
-        "chat.agent.enabled": true, // Always enabled - required for BMAD agents
+        "chat.agent.enabled": true, // Always enabled - required for BMad agents
         "chat.agent.maxRequests": parseInt(manualSettings.maxRequests),
         "github.copilot.chat.agent.runTasks": manualSettings.runTasks,
         "chat.mcp.discovery.enabled": manualSettings.mcpDiscovery,

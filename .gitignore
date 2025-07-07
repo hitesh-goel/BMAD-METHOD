@@ -21,7 +21,10 @@ CLAUDE.md
 test-project-install/*
 sample-project/*
 .claude
+.windsurf/
+.trae/
 .bmad-core
 .bmad-creator-tools
 .gemini
-.bmad*/
+.bmad*/.cursor/
+web-bundles/
